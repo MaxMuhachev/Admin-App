@@ -1,0 +1,81 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container">
+    <h1 class="p-3 mb-4">Отчётность по пользователям за период</h1>
+
+    <a href="."><button type="button" class="btn btn-secondary mt-4 mb-5">Назад</button></a>
+
+    <form action="" method="post" class="mt-5">
+        <div class="row">
+            <div class="col-lg-2">
+                <label for="start-date">Дата начала периода</label>
+            </div>
+            <div class="col-lg-2 me-5">
+                <input type="date" name="start-date" id="start-date">
+            </div>
+            <div class="col-lg-2">
+                <label for="end-date">Дата конца периода</label>
+            </div>
+            <div class="col-lg-2">
+                <input type="date" name="end-date" id="end-date">
+            </div>
+        </div>
+        <button type="button" class="btn btn-success mt-3" id="get-statistic">Получить статистику</button>
+    </form>
+
+    <div class="row">
+        <div>
+            <table class="table table-striped table-bordered table-hover tableID" style="margin-top: 100px">
+                <thead>
+                <tr>
+                    <th class="center align-middle">Электронная почта</th>
+                    <th class="center align-middle">ФИО</th>
+                    <th class="center align-middle">Логин</th>
+                    <th class="center align-middle">Пол</th>
+                    <th class="center align-middle">Дата добавления</th>
+                </tr>
+                </thead>
+                <tbody id="data">
+                <tr>
+                    <td colspan="5">Пользователей нет</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function() {
+        $('.reports-head').addClass("active");
+        let endDate = $('#end-date');
+        endDate[0].valueAsDate = new Date();
+
+        $('#get-statistic').click(function () {
+            let startDate = $('#start-date').val();
+            if (startDate === "") {
+                alert('Не выставлена "Дата начала"!');
+                return;
+            }
+            $.ajax({
+                method: "GET",
+                url: "/reports/users/get",
+                dataType: 'json',
+                async: true,
+                data: {startDate: startDate, endDate: endDate.val()},
+                success: function (response) {
+                    let dataTable = $("#data");
+                    dataTable.text("");
+                    for (const data of response) {
+                        dataTable.append(`<tr><td>${data.UserEmail}</td><td>${data.UserName}</td><td>${data.UserLogin}</td><td>${data.UserFloor}</td><td>${new Date(data.UserDateAdded).toLocaleDateString()}</td></tr>`)
+                    }
+                },
+                error: function (response) {
+                    toast({heading: "", text: "Ошибка получения отчётности" + response.responseText, type: "error"});
+                }
+            })
+        })
+    };
+</script>

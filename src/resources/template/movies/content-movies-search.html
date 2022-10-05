@@ -1,0 +1,98 @@
+<!--{{template "base" .}}-->
+<!--{{template "header-users" .}}-->
+
+<!--<div class="container">-->
+<!--    <h1 class="p-3 mb-4">Фильмы для пользователей</h1>-->
+
+<!--    <form action="" method="get" class="mt-5">-->
+<!--        <div class="row">-->
+<!--            <div class="col-lg-2">-->
+<!--                <label for="movie">Название фильма</label>-->
+<!--            </div>-->
+<!--            <div class="col-lg-2 me-5">-->
+<!--                <input type="text" name="movie" id="movie">-->
+<!--            </div>-->
+<!--            <div class="col-lg-2">-->
+<!--                <label for="genre">Название жанра</label>-->
+<!--            </div>-->
+<!--            <div class="col-lg-2">-->
+<!--                <input type="text" name="genre" id="genre">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <button type="button" class="btn btn-secondary mt-3" id="movie-search">Поиск</button>-->
+<!--    </form>-->
+
+
+<!--</div>-->
+<!--<table class="table table-striped table-bordered table-hover tableID"-->
+<!--       style="width: 93%;margin: 0 auto; margin-top: 40px">-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <th class="center align-middle">Название фильма</th>-->
+<!--        <th class="center align-middle">Описание</th>-->
+<!--        <th class="center align-middle">Рейтинг кинопоиска</th>-->
+<!--        <th class="center align-middle">Год выпуска</th>-->
+<!--        <th class="center align-middle">Постер</th>-->
+<!--        <th class="center align-middle">Видео фильма</th>-->
+<!--        <th class="center align-middle">Жанры</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody id="data">-->
+<!--    {{if not .MovieList}}-->
+<!--    <tr>-->
+<!--        <td colspan="7">Фильмов нет</td>-->
+<!--    </tr>-->
+<!--    {{end}}-->
+
+<!--    {{range .MovieList}}-->
+<!--    <tr>-->
+<!--        <td class="w-25">{{ .Title }}</td>-->
+<!--        <td class="w-50">{{ .Description }}</td>-->
+<!--        <td style="width: 30px; text-align: center">{{ .KpRating }}</td>-->
+<!--        <td class="w-25; text-align: center">{{ .Year }}</td>-->
+<!--        <td><img style="max-width: 150px" src={{ .PictureLink }} alt={{ .Title }}></td>-->
+<!--        <td><a href={{ .VideoLink }}>-->
+<!--            <button type="button" class="btn btn-outline-success mt-3">Смотреть</button>-->
+<!--        </a></td>-->
+<!--        <td class="w-25">{{ .Genres }}</td>-->
+<!--    </tr>-->
+<!--    {{end}}-->
+<!--    </tbody>-->
+<!--</table>-->
+<!--{{template "script" .}}-->
+
+<!--<script type="text/javascript">-->
+<!--    window.onload = function () {-->
+<!--        $('.movies-search-head').addClass("active");-->
+
+<!--        $('#movie-search').click(function () {-->
+<!--            let movie = $('#movie').val();-->
+<!--            let genre = $('#genre').val();-->
+<!--            $.ajax({-->
+<!--                method: "GET",-->
+<!--                url: "/movies-filter",-->
+<!--                dataType: 'json',-->
+<!--                async: true,-->
+<!--                data: {movie: movie, genre: genre},-->
+<!--                success: function (response) {-->
+<!--                    let dataTable = $("#data");-->
+<!--                    dataTable.text("");-->
+<!--                    for (const data of response) {-->
+<!--                        dataTable.append(`<tr><td class="w-25">${data.Title}</td>` +-->
+<!--                            `<td class="w-50">${data.Description}</td>` +-->
+<!--                            `<td class="width: 30px; text-align: center">${data.KpRating}</td>` +-->
+<!--                            `<td class="w-25; text-align: center">${data.Year}</td>` +-->
+<!--                            `<td><img style="max-width: 150px" src=${data.PictureLink} alt=${data.Title}></td>` +-->
+<!--                            `<td><a href=${data.VideoLink}>-->
+<!--                            <button type="button" class="btn btn-outline-success mt-3">Смотреть</button>-->
+<!--                        </a></td>` +-->
+<!--                            `<td class="w-25">${data.Genres}</td></tr>`);-->
+<!--                    }-->
+<!--                },-->
+<!--                error: function (response) {-->
+<!--                    toast({heading: "", text: "Ошибка получения фильмов" + response.responseText, type: "error"});-->
+<!--                }-->
+<!--            })-->
+<!--        })-->
+<!--    };-->
+<!--</script>-->

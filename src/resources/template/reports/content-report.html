@@ -1,0 +1,32 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container">
+    <h1 class="p-3">Отчётная докумментация</h1>
+
+    <div class="container-fluid">
+        <a href="/reports/films">
+            <button type="submit" class="btn btn-success mt-5">
+                Отчётность по фильмам, заведенных за период
+            </button>
+        </a>
+        <a href="/reports/users">
+            <button type="submit" class="btn btn-success mt-5">
+                Отчётность по добавленным пользователям за период
+            </button>
+        </a>
+        <a href="/reports/comments">
+            <button type="submit" class="btn btn-success mt-5">
+                Отчётность по комментариям заданного пользователя для заданного фильма
+            </button>
+        </a>
+    </div>
+
+</div>
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function () {
+        $('.reports-head').addClass("active");
+    };
+</script>

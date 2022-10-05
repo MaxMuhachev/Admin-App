@@ -1,0 +1,74 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container">
+    <h1 class="p-3 mb-4">Статистика добавленных пользователей за период</h1>
+
+    <a href="."><button type="button" class="btn btn-secondary mt-4 mb-5">Назад</button></a>
+
+    <form action="" method="post" class="mt-5">
+        <div class="row">
+            <div class="col-lg-2">
+                <label for="start-date">Дата начала периода</label>
+            </div>
+            <div class="col-lg-2 me-5">
+                <input type="date" name="start-date" id="start-date">
+            </div>
+            <div class="col-lg-2">
+                <label for="end-date">Дата конца периода</label>
+            </div>
+            <div class="col-lg-2">
+                <input type="date" name="end-date" id="end-date">
+            </div>
+        </div>
+        <button type="button" class="btn btn-success mt-3" id="get-statistic">Получить статистику</button>
+    </form>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <table class="table table-striped table-bordered table-hover tableID" style="margin-top: 100px">
+                <thead>
+                <tr>
+                    <th class="center align-middle">Количество добавленных пользователей</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="7" class="data">Пользователей нет</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function() {
+        $('.statistic-head').addClass("active");
+        let endDate = $('input[name=end-date]');
+        endDate[0].valueAsDate = new Date();
+
+        $('#get-statistic').click(function () {
+            let startDate = $('input[name=start-date]').val();
+            if (startDate === "") {
+                alert('Не выставлена "Дата начала"!');
+                return;
+            }
+            if (new Date(endDate.val()))
+            $.ajax({
+                method: "GET",
+                url: "/statistic/users/get",
+                dataType: 'json',
+                async: true,
+                data: {startDate: startDate, endDate: endDate.val()},
+                success: function (response) {
+                    $(".data").text(response);
+                },
+                error: function (response) {
+                    toast({heading: "", text: "Ошибка получения статистики" + response.responseText, type: "error"});
+                }
+            })
+        })
+    };
+</script>

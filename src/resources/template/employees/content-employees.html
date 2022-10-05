@@ -1,0 +1,58 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container">
+    <h1 class="p-3">Редактирование сотрудников</h1>
+
+    <div class="container-fluid">
+        <a href="employees/create"><button type="submit" class="btn btn-success mt-5">Добавить сотрудника</button></a>
+    </div>
+    <table class="table table-striped table-bordered table-hover tableID">
+        <thead>
+        <tr>
+            <th class="center align-middle">Действия</th>
+            <th class="center align-middle">Электронная_почта</th>
+            <th class="center align-middle">ФИО</th>
+            <th class="center align-middle">Логин</th>
+            <th class="center align-middle">Пол</th>
+            <th class="center align-middle">Адрес</th>
+            <th class="center align-middle">День рождения</th>
+            <th class="center align-middle">Компания</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{if not .EmployeeList }}
+            <tr>
+                <td colspan="7">Сотрудников нет</td>
+            </tr>
+        {{end}}
+
+        {{range .EmployeeList}}
+            <tr>
+                <td>
+                    <a href="/employees/edit?email={{ .Email }}">
+                        <button  class="btn btn-warning pb-1 pl-1 pr-2 pt-1 mb-2">
+                            Именить
+                        </button>
+                    </a>
+                    <button class=" btn btn-danger pl-1 pr-2 del deleteEmployee" value="{{ .Email }}" style="padding: 3px">Удалить</button>
+                </td>
+                <td class="w-25">{{ .Email }}</td>
+                <td class="w-25">{{ .FIO }}</td>
+                <td class="w-25">{{ .Login }}</td>
+                <td class="w-25">{{ .Floor }}</td>
+                <td class="w-25">{{ .Address }}</td>
+                <td class="w-25">{{ .Birthday }}</td>
+                <td class="w-25">{{ .Company }}</td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+</div>
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function() {
+        $('.employees-head').addClass("active");
+    };
+</script>

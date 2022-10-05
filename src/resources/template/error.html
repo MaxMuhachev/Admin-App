@@ -1,0 +1,31 @@
+{{template "base" .}}
+
+<div class="wrapper fadeInDown">
+    <div class="error">
+        <div class="errorWhiteLabel container d-flex">
+            <h1 class="m-auto"><span>{{.Error}}</span></h1>
+        </div>
+    </div>
+
+    <div id="formContent">
+        <!-- Tabs Titles -->
+
+        <!-- Icon -->
+        <div class="fadeIn first">
+            <i class="fas fa-user-circle mt-2" style="font-size: 100pt;"></i>
+        </div>
+
+        <!-- Login Form -->
+        <form action="." method="POST">
+            <label for="email"></label>
+            <input type="text" id="email" class="fadeIn second" name="email" placeholder="Email">
+            <label for="password"></label>
+            <input type="password" id="password" class="fadeIn third" name="password" placeholder="пароль">
+            <input type="submit" class="fadeIn fourth" value="Войти">
+        </form>
+
+    </div>
+
+</div>
+
+{{template "script" .}}

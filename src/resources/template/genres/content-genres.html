@@ -1,0 +1,49 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container">
+    <h1 class="p-3">Редактирование жанров</h1>
+
+    <div class="container-fluid">
+        <a href="genres/create"><button type="submit" class="btn btn-success mt-5">Добавить жанр</button></a>
+<!--        <a href="movie-genres"><button type="submit" class="btn btn-success mt-5">Редактирование связи фильмов с жанрами</button></a>-->
+    </div>
+    <table class="table table-striped table-bordered table-hover tableID">
+        <thead>
+        <tr>
+            <th class="center align-middle">Действия</th>
+            <th class="center align-middle">Название жанра</th>
+            <th class="center align-middle">Описание жанра</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{if not .GenreList}}
+            <tr>
+                <td colspan="3">Жанров нет</td>
+            </tr>
+        {{end}}
+
+        {{range .GenreList}}
+            <tr>
+                <td style="width: 10%">
+                    <a href="/genres/edit?id={{ .ID }}">
+                        <button  class="btn btn-warning pb-1 pl-1 pr-2 pt-1 mb-2">
+                            Именить
+                        </button>
+                    </a>
+                    <button  class=" btn btn-danger pl-1 pr-2 del deleteGenre"  value="{{ .ID }}" style="padding: 3px">Удалить</button>
+                </td>
+                <td style="width: 10%">{{ .Title }}</td>
+                <td><div class="cutedText">{{ .Description }}</div></td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+</div>
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function() {
+        $('.genre-head').addClass("active");
+    };
+</script>

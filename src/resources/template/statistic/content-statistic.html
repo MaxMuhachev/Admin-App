@@ -1,0 +1,32 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container">
+    <h1 class="p-3">Статистика</h1>
+
+    <div class="container-fluid">
+        <a href="statistic/films">
+            <button type="submit" class="btn btn-success mt-5">
+                Статистика по добавленным фильмам за период
+            </button>
+        </a>
+        <a href="statistic/comments">
+            <button type="submit" class="btn btn-success mt-5">
+                Статистика по добавленным комментариям за период
+            </button>
+        </a>
+        <a href="statistic/users">
+            <button type="submit" class="btn btn-success mt-5">
+                Статистика по добавленным пользователям за период
+            </button>
+        </a>
+    </div>
+
+</div>
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function () {
+        $('.statistic-head').addClass("active");
+    };
+</script>

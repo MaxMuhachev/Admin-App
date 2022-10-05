@@ -1,0 +1,85 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container pl-5">
+
+    <a href="/movie-genres"><button type="button" name="submit" class="btn btn-secondary mt-4 mb-5">Назад</button></a>
+
+    <h2 class="m-4 mb-5">Связь фильма
+            {{range $key, $value := .MovieHasGenreList}}
+                "{{ $key.MovieTitle }}"
+            {{end}}
+        с жанрами</h2>
+
+    {{ if .Error }}
+        <h4 class="mt-3 mb-3 error">{{ .Error }}</h4>
+    {{end}}
+
+    {{ if .Success }}
+        <h4 class="mt-3 mb-3 success">{{ .Success }}</h4>
+    {{end}}
+
+    <div class="mt-5">
+        <form action="" method="post">
+
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="movie" class="mb-2">Название фильма</label>
+                    <select name="movieId" id="movie" class="form-select" required {{if .MovieHasGenreList}} disabled {{end}}>
+                        {{range .MovieList}}
+                            <option value="{{ .ID }}"
+                                >
+                                {{ .Title }}
+                            </option>
+                        {{end}}
+                    </select>
+
+                </div>
+
+                <div class="col mb-3">
+                    <label for="genre" class="mb-2">Название жанров</label>
+                    <select name="genreId[]" id="genre" class="form-select" required multiple="multiple">
+                        {{range .GenreList}}
+                        <option  value="{{ .ID }}">
+                            {{ .Title }}
+                        </option>
+                        {{end}}
+                    </select>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <button type="submit" name="submit" class="btn btn-success mt-5 mb-5">
+                    {{ if .MovieHasGenreList }}
+                    Изменить
+                    {{else}}
+                    Добавить
+                    {{end}}
+                    связи с жанрами
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function() {
+        $(".genre-head").addClass("active");
+        let movies = $("#movie");
+        let genres = $("#genre");
+        movies.select2();
+        genres.select2();
+        let genreListIds = [];
+        let movieId;
+        {{range $key, $value := .MovieHasGenreList}}
+            {{range $value}}
+                genreListIds.push("{{.GenreID}}");
+            {{end}}
+            movieId = "{{$key.MovieID}}";
+        {{end}}
+        genres.val(genreListIds).trigger("change");
+        movies.val(movieId).trigger("change");
+    };
+</script>

@@ -1,0 +1,160 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container pl-5">
+
+    <a href=".">
+        <button type="button" name="submit" class="btn btn-secondary mt-4 mb-5">Назад</button>
+    </a>
+
+    <h2 class="m-4 mb-5">Сотрудник
+        {{ if .Employee }}
+        "{{ .Employee.FIO }}"
+        {{end}}</h2>
+
+    {{ if .Error }}
+    <h4 class="mt-3 mb-3 error">{{ .Error }}</h4>
+    {{end}}
+
+    {{ if .Success }}
+    <h4 class="mt-3 mb-3 success">{{ .Success }}</h4>
+    {{end}}
+
+    <div class="mt-5">
+        <form action="" method="post">
+
+            <div class="row">
+                <div class="col form-floating mb-3">
+                    <input type="text" class="form-control"
+                           name="FIO" id="FIO" placeholder="8.5" maxlength="60"
+                           {{ if .Employee }}
+                           value={{ .Employee.FIO }}
+                           {{end}}>
+                    <label for="FIO">ФИО</label>
+                </div>
+                <div class="col form-floating mb-3">
+                    <input type="email" class="form-control" required name="email" id="email" maxlength="40"
+                           placeholder="name@gmail.com"
+                           {{ if .Employee }}
+                           value={{ .Employee.Email }}
+                           {{end}}>
+                    <label for="email">Email</label>
+                </div>
+            </div>
+
+            <input type="password" name="oldEmail" hidden {{ if .Employee }} value={{ .Employee.Email }} {{end}}>
+
+            <div class="row">
+                <div class="col form-floating mb-3">
+                    <input type="date" class="form-control" required id="birthday" name="birthday"
+                           {{ if .Employee }}
+                           value={{ .Employee.Birthday }}
+                           {{end}}>
+                    <label for="birthday">Дата рождения</label>
+                </div>
+
+                <div class="col form-floating mb-3">
+                        <input type="text" class="form-control" required id="address" name="address" placeholder="описание"
+                           {{ if .Employee }} value={{ .Employee.Address }} {{end}}>
+                    <label for="address">Адресс</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="floor">Пол</label>
+                    <select name="floor" class="form-select" id="floor" required style="width: 100%">
+                        <option {{ if (.Employee) }} {{if eq .Employee.Floor "мужской"}} selected {{end}}{{end}}
+                        >мужской</option>
+                        <option>женский</option>
+                    </select>
+                </div>
+
+                <div class="col mb-3">
+                    <label for="company">Компания, в которой работает сотрудник</label>
+                    <select name="company" id="company" style="width: 100%" required>
+                        {{ if .Employee }}
+                        <option value={{ .Employee.CompanyID }} selected>{{ .Employee.Company }}</option>
+                        {{end}}</select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-floating mb-3">
+                    <input type="text" class="form-control" maxlength="20" required name="login" id="login"
+                           placeholder="name"
+                           {{ if .Employee }}
+                           value={{ .Employee.Login }}
+                           {{end}}>
+                    <label for="login">Логин</label>
+                </div>
+
+                <div class="col form-floating mb-3">
+                    <input type="password" class="form-control" minlength="5" maxlength="40" required id="password" name="password"
+                           placeholder="qwert123"
+                           {{ if .Employee }}
+                           value={{ .Employee.Password }}
+                           {{end}}>
+                    <label for="password">Пароль</label>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <button type="submit" name="submit" class="btn btn-success mt-5 mb-5">
+                    {{ if .Employee }}
+                    Изменить данные
+                    {{else}}
+                    Добавить
+                    {{end}}
+                    сотрудника
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function () {
+        $("#floor").select2({
+            theme: "bootstrap4",
+            language: "ru",
+        });
+        $("#company").select2({
+            theme: "bootstrap4",
+            language: "ru",
+            placeholder: "Выберете компанию",
+            ajax: {
+                url: '/api/company',
+                delay: 1000,
+                data: function (params) {
+                    let searchString = params.term ? params.term : '';
+                    let filter = "%" + searchString + "%";
+                    return {
+                        search: filter,
+                        page: params.page - 1 || 0
+                    };
+                },
+                processResults: function (response) {
+                    response = JSON.parse(response);
+                    return {
+                        results: response.data.map(function (currentValue) {
+                            return {
+                                id: currentValue.ID,
+                                text: currentValue.Title
+                            }
+                        }),
+                        pagination: {
+                            more: (response.page * response.size + response.size) < response.totalElements
+                        }
+                    }
+                },
+                error: function (response) {
+                    toast({heading: "", text: "Ошибка получения пользователей" + response.responseText, type: "error"});
+                }
+            }
+        });
+        $('.employees-head').addClass("active");
+    };
+</script>

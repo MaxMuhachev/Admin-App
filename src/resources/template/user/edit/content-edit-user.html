@@ -1,0 +1,94 @@
+{{template "base" .}}
+{{template "header-users" .}}
+
+<div class="container pl-5">
+
+    <h2 class="m-4 mb-5">Пользователь
+        {{ if .User }}
+        "{{ .User.FIO }}"
+        {{end}}</h2>
+
+    {{ if .Error }}
+    <h4 class="mt-3 mb-3 error">{{ .Error }}</h4>
+    {{end}}
+
+    {{ if .Success }}
+    <h4 class="mt-3 mb-3 success">{{ .Success }}</h4>
+    {{end}}
+
+    <div class="mt-5">
+        <form action="" method="post">
+
+            <div class="row">
+                <div class="col form-floating mb-3">
+                    <input type="text" class="form-control"
+                           name="FIO" id="FIO" placeholder="8.5" maxlength="60"
+                           {{ if .User }}
+                           value={{ .User.FIO }}
+                           {{end}}>
+                    <label for="FIO">ФИО</label>
+                </div>
+                <div class="col form-floating mb-3">
+                    <input type="text" class="form-control" required name="login" id="login" maxlength="20"
+                           placeholder="name"
+                           {{ if .User }}
+                           value={{ .User.Login }}
+                           {{end}}>
+                    <label for="login">Логин</label>
+                </div>
+            </div>
+
+            <input type="password" name="oldEmail" hidden {{ if .User }} value={{ .User.Email }} {{end}}>
+
+
+            <div class="row">
+                <div class="col mb-3 col-lg-11">
+                    <label for="floor">Пол</label>
+                    <select name="floor" class="form-select" id="floor" required style="width: 100%">
+                        <option {{ if (.User) }} {{if eq .User.Floor "мужской"}} selected {{end}}{{end}}
+                        >мужской</option>
+                        <option>женский</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-floating mb-3">
+                    <input type="email" class="form-control" required name="email" id="email" maxlength="40"
+                           placeholder="name@gmail.com"
+                           {{ if .User }}
+                           value={{ .User.Email }}
+                           {{end}}>
+                    <label for="email">Email</label>
+                </div>
+                <div class="col form-floating mb-3">
+                    <input type="password" class="form-control" minlength="5" maxlength="40" required id="password" name="password"
+                           placeholder="qwert123"
+                           {{ if .User }}
+                           value={{ .User.Password }}
+                           {{end}}>
+                    <label for="password">Пароль</label>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <button type="submit" name="submit" class="btn btn-success mt-5 mb-5">
+                    Изменить данные
+                    пользователя
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function () {
+        $("#floor").select2({
+            theme: "bootstrap4",
+            language: "ru",
+        });
+        $('.user-head').addClass("active");
+    };
+</script>

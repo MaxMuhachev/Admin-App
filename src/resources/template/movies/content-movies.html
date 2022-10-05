@@ -1,0 +1,58 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container">
+    <h1 class="p-3">Редактирование фильмов</h1>
+
+    <div class="container-fluid">
+        <a href="movies/create"><button type="submit" class="btn btn-success mt-5">Добавить фильм</button></a>
+    </div>
+    <table class="table table-striped table-bordered table-hover tableID">
+        <thead>
+        <tr>
+            <th class="center align-middle">Действия</th>
+            <th class="center align-middle">Название фильма</th>
+            <th class="center align-middle">Постер</th>
+            <th class="center align-middle">Доступно для просмотра</th>
+            <th class="center align-middle">Дата добавления</th>
+            <th class="center align-middle">Год выпуска</th>
+            <th class="center align-middle">Кол во просмотров</th>
+            <th class="center align-middle">Добавил сотрудник</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{if not .MovieList}}
+            <tr>
+                <td colspan="7">Фильмов нет</td>
+            </tr>
+        {{end}}
+
+        {{range .MovieList}}
+            <tr>
+                <td>
+                    <a href="/movies/edit?id={{ .ID }}">
+                        <button  class="btn btn-warning pb-1 pl-1 pr-2 pt-1 mb-2">
+                            Именить
+                        </button>
+                    </a>
+                    <button class="btn btn-danger pl-1 pr-2 del deleteMovie" value="{{ .ID }}" style="padding: 3px">Удалить</button>
+                </td>
+                <td class="w-25">{{ .Title }}</td>
+                <td class="center align-middle"><img style="max-width: 150px" src={{ .PictureLink }} alt={{ .Title }}></td>
+                <td class="w-25">{{ .Available }}</td>
+                <td class="w-25">{{ .DateAdd }}</td>
+                <td class="w-25">{{ .Year }}</td>
+                <td class="w-25">{{ .CountView }}</td>
+                <td class="w-25">{{ .AddEmpl }}</td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+</div>
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function() {
+        $('.movie-head').addClass("active");
+    };
+</script>

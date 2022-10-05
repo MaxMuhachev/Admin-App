@@ -1,0 +1,59 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container pl-5">
+
+    <a href="."><button type="button" name="submit" class="btn btn-secondary mt-4 mb-5">Назад</button></a>
+
+    <h2 class="m-4 mb-5">Жанр
+        {{ if .Genre }}
+            "{{ .Genre.Title }}"
+        {{end}}</h2>
+
+    {{ if .Error }}
+        <h4 class="mt-3 mb-3 error">{{ .Error }}</h4>
+    {{end}}
+
+    {{ if .Success }}
+        <h4 class="mt-3 mb-3 success">{{ .Success }}</h4>
+    {{end}}
+
+    <div class="mt-5">
+        <form action="" method="post">
+
+            <div class="row">
+                <div class="col form-floating mb-3">
+                        <input type="text" class="form-control" required name="title" id="title" placeholder="Форсаж"
+                               {{ if .Genre }}
+                               value={{ .Genre.Title }}
+                               {{end}}>
+                    <label for="title">Название</label>
+                </div>
+
+                <div class="col form-floating mb-3">
+                        <textarea class="form-control"  required id="description" name="description" placeholder="2021" style="height: 210px">{{ if .Genre }}{{ .Genre.Description }}{{end}}</textarea>
+                    <label for="description">Описание</label>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <button type="submit" name="submit" class="btn btn-success mt-5 mb-5">
+                    {{ if .Genre }}
+                    Изменить
+                    {{else}}
+                    Добавить
+                    {{end}}
+                    жанр
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function() {
+        $('.genre-head').addClass("active");
+    };
+</script>

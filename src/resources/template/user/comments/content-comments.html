@@ -1,0 +1,229 @@
+{{template "base" .}}
+{{template "header-users" .}}
+
+<div class="container">
+    <h1 class="p-3 mb-4">Комментарии пользователей</h1>
+
+    <form action="" method="post" class="mt-5">
+        <div class="row">
+            <div class="col-lg-1">
+                <label for="movie">Фильм</label>
+            </div>
+            <div class="col-lg-2 me-5">
+                <select name="movie" id="movie" style="width: 200px"></select>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary mt-3" id="get-comments">Посмотреть комментарии</button>
+
+        <div id="comment-data"></div>
+    </form>
+
+    <div class="row">
+        <div>
+            <table class="table table-striped table-bordered table-hover tableID" style="margin-top: 100px">
+                <thead>
+                <tr>
+                    <th class="center align-middle">Возможные действия</th>
+                    <th class="center align-middle">Название фильма</th>
+                    <th class="center align-middle">Электронная почта пользователя</th>
+                    <th class="center align-middle w-25">Текст комментария</th>
+                    <th class="center align-middle">Дата публикации</th>
+                </tr>
+                </thead>
+                <tbody id="data">
+                <tr>
+                    <td colspan="5">Комментариев нет</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{template "script" .}}
+
+<script type="text/javascript">
+    function sendNewComment() {
+        let comment = $('#comment').val();
+        let movie = $('#movie').val();
+
+        if (comment.length < 1) {
+            toast({heading: "", text: "Комментарий не может быть пустым!", type: "error"});
+        } else {
+            $.ajax({
+                method: "POST",
+                url: "/user/comment/create",
+                dataType: 'json',
+                async: true,
+                data: {movie: movie, comment: comment},
+                success: function (data) {
+                    toast({heading: "", text: "Комментарий оставлен", type: "success"});
+                    let dataTable = $("#data");
+                    let buttons;
+                    if (data != null) {
+                        buttons = getButtonsForDelUpd(data);
+                        dataTable.prepend(`<tr class="comment${data.ID}"><td>` + buttons + `</td><td>${data.MovieTitle}</td><td>${data.UserEmail}</td><td>${data.CommentText}</td><td>${new Date(data.CommentDate).toLocaleDateString()}</td></tr>`)
+                    }
+                },
+                error: function (response) {
+                    toast({heading: "", text: "Ошибка добавления комментария" + response.responseText, type: "error"});
+                }
+            })
+        }
+
+    }
+
+    function editComment(id) {
+        $.ajax({
+            method: "GET",
+            url: "/user/comment/get",
+            dataType: 'json',
+            async: true,
+            data: {commentId: id},
+            success: function (data) {
+                if (data.length > 0) {
+                    data = data[0]
+                    if (data.CreatedByCurrentUser === "1") {
+                        let textarea = ` <div class="form-group"><textarea class="form-control" cols="30" rows="4">${data.CommentText}</textarea>`;
+                        let btnEdit = `<button type="button" class="btn btn-success mt-1 form-control" onclick="sendEditedComment(${data.ID})">Изменить комментарий</button></div>`;
+                        $(".comment" + id).find(".commentText").html(textarea + btnEdit);
+                    }
+                } else {
+                    toast({heading: "", text: "Данного комментария больше нет", type: "error"});
+                }
+            },
+            error: function (response) {
+                toast({heading: "", text: "Ошибка получения комментария" + response.responseText, type: "error"});
+            }
+        })
+    }
+
+    function sendEditedComment(commentId) {
+        let commentText =  $(".comment" + commentId).find("textarea").val();
+        if (commentText.length < 1) {
+            toast({heading: "", text: "Комментарий не может быть пустым!", type: "error"});
+        } else {
+            $.ajax({
+                method: "POST",
+                url: "/user/comment",
+                dataType: 'json',
+                async: true,
+                data: {commentId: commentId, commentText: commentText},
+                success: function (data) {
+                    $(".comment" + commentId).find(".commentText").text(data.CommentText);
+                    toast({heading: "", text: "Комментарий изменен", type: "success"});
+                },
+                error: function (response) {
+                    toast({heading: "", text: "Ошибка изменения комментария" + response.responseText, type: "error"});
+                }
+            })
+        }
+    }
+
+    function deleteComment(id) {
+        $.ajax({
+            method: "POST",
+            url: "/user/comment/delete",
+            dataType: 'json',
+            async: true,
+            data: {id: id},
+            success: function (data) {
+                $(".comment" + id).remove();
+                toast({heading: "", text: "Комментарий удален!", type: "success"});
+            },
+            error: function (response) {
+                toast({heading: "", text: "Ошибка удаления комментария" + response.responseText, type: "error"});
+            }
+        })
+    }
+
+    window.onload = function () {
+        $('.comments-user-head').addClass("active");
+
+        $("#movie").select2({
+            disabled: false,
+            theme: "bootstrap4",
+            language: "ru",
+            placeholder: "Выберете фильм",
+            ajax: {
+                url: '/api/movies',
+                delay: 1000,
+                data: function (params) {
+                    let searchString = params.term ? params.term : '';
+                    let filter = "%" + searchString + "%";
+                    return {
+                        search: filter,
+                        page: params.page - 1 || 0
+                    };
+                },
+                processResults: function (response) {
+                    response = JSON.parse(response);
+                    return {
+                        results: response.data.map(function (currentValue) {
+                            return {
+                                id: currentValue.ID,
+                                text: currentValue.Title
+                            }
+                        }),
+                        pagination: {
+                            more: (response.page * response.size + response.size) < response.totalElements
+                        }
+                    }
+                },
+                error: function (response) {
+                    toast({heading: "", text: "Ошибка получения фильма" + response.responseText, type: "error"});
+                }
+            }
+        });
+
+        let commentData = $('#comment-data');
+
+        $('#get-comments').click(function () {
+            let movie = $('#movie').val();
+
+            $.ajax({
+                method: "GET",
+                url: "/user/comments/get",
+                dataType: 'json',
+                async: true,
+                data: {movie: movie},
+                success: function (data) {
+                    let dataTable = $("#data");
+                    if (data != null) {
+                        dataTable.text("");
+                        let buttons
+                        data.map(function (currentValue) {
+                            buttons = getButtonsForDelUpd(currentValue);
+                            dataTable.append(`<tr class="comment${currentValue.ID}">
+                                        <td>` + buttons + `</td>
+                                        <td>${currentValue.MovieTitle}</td>
+                                        <td>${currentValue.UserEmail}</td>
+                                        <td class="commentText">${currentValue.CommentText}</td>
+                                        <td>${new Date(currentValue.CommentDate).toLocaleDateString()}</td>
+                                        </tr>`)
+                        });
+                    } else {
+                        dataTable.html("<tr><td colspan=\"5\">Комментариев не найдено</td></tr>");
+                    }
+                },
+                error: function (response) {
+                    toast({heading: "", text: "Ошибка получения комментариев" + response.responseText, type: "error"});
+                }
+            })
+            commentData.html('<br>\n' +
+                '        <label for="comment" class="form-label pt-5">Комментарий</label>\n' +
+                '        <textarea class="form-control"  name="comment" id="comment" cols="3" rows="3"></textarea>\n' +
+                '        <button type="button" class="btn btn-success mt-1" id="send-comment" onclick="sendNewComment()">Оставить комментарий</button>');
+        })
+
+    };
+
+    function getButtonsForDelUpd(comment) {
+        let btnUpdate = "";
+        let btnDelete = "";
+        if (comment.CreatedByCurrentUser === "1") {
+            btnUpdate = `<div><button type="button" class="btn btn-warning pb-1 pl-1 pr-2 pt-1 mb-2" onclick="editComment(${comment.ID})" >Именить</button></div>`;
+            btnDelete = `<div><button type="button" class="btn btn-danger pl-1 pr-2 del" onclick="deleteComment(${comment.ID})">Удалить</button></div>`;
+        }
+        return btnUpdate + btnDelete
+    }
+</script>

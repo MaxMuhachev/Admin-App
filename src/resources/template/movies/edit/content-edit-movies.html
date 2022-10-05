@@ -1,0 +1,173 @@
+{{template "base" .}}
+{{template "header" .}}
+
+<div class="container pl-5">
+    {{ if .Movie }}
+        <div class="col-3 mt-2 float-end">
+            <div class="row mb-3">
+                <label for="dateAdd2">Дата добавления
+                    <input disabled type="date" class="form-control"id="dateAdd2"
+                           value={{ .Movie.DateAdd }}>
+                </label>
+            </div>
+            <div class="row mb-3">
+                <label for="dateLastEdit2">Дата последнего реадактирования
+                    <input disabled type="date" class="form-control" id="dateLastEdit2"
+                           value={{ .Movie.DateLastEdit }}>
+                </label>
+            </div>
+            <div class="row mb-3">
+                <label for="countView2">Количество просмотров
+                    <input disabled type="number" class="form-control" id="countView2"
+                           value={{ .Movie.CountView }}>
+                </label>
+            </div>
+            <div class="row">
+                <label>Cотрудник, добавивший фильм: {{ .Movie.AddEmpl }}</label>
+            </div>
+        </div>
+    {{end}}
+
+    <a href="."><button type="button" name="submit" class="btn btn-secondary mt-4 mb-5">Назад</button></a>
+
+    <h1 class="m-4 mb-5">Фильм
+        {{ if .Movie }}
+        "{{ .Movie.Title }}"
+        {{end}}</h1>
+
+    {{ if .Error }}
+        <h4 class="mt-3 mb-3 error">{{ .Error }}</h4>
+    {{end}}
+
+    {{ if .Success }}
+        <h4 class="mt-3 mb-3 success">{{ .Success }}</h4>
+    {{end}}
+
+    <div class="mt-5">
+        <form action="" method="post">
+
+            {{ if .Movie }}
+                <input type="date" class="form-control" id="dateLastEdit" name="dateLastEdit" hidden
+                       value={{ .Movie.DateLastEdit }}>
+
+                <input type="date" class="form-control" name="dateAdd" hidden
+                       value={{ .Movie.DateAdd }}>
+
+                <input type="email" class="form-control" name="addEmpl" hidden
+                       value={{ .Movie.AddEmpl }}>
+
+                <input type="number" class="form-control" name="countView" hidden
+                       value={{ .Movie.CountView }}>
+                <input type="number" class="form-control" name="id" hidden
+                       value={{ .Movie.ID }}>
+            {{end}}
+
+            <div class="row">
+                <div class="form-check mb-3 mt-5">
+                    <input class="form-check-input m-1 ms-0" type="checkbox" name="available" id="available" value="1"
+                           {{ if .Movie }}
+                                {{ if .Movie.Available }}
+                                    checked
+                                {{end}}
+                           {{end}}>
+                    <label class="form-check-label" for="available">Доступно для просмотра</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-floating mb-3">
+                        <input type="text" class="form-control" required name="title" id="title" placeholder="Форсаж"
+                               {{ if .Movie }}
+                               value={{ .Movie.Title }}
+                               {{end}}>
+                    <label for="title" class="ms-3">Название</label>
+                </div>
+                <div class="col form-floating mb-3">
+                        <input type="number" min="1900" max="3000" class="form-control" required name="year" id="year" placeholder="2021"
+                               onkeypress="return ((event.charCode >= 48 && event.charCode <= 57))"
+                               {{ if .Movie }}
+                               value={{ .Movie.Year }}
+                               {{end}}>
+                    <label for="year" class="ms-3">Год выпуска</label>
+                </div>
+                <div class="col form-floating mb-3">
+                    <input type="number" class="form-control" min="0" max="10"
+                           onkeypress="return ((event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46)"
+                           name="kpRating" id="kpRating" placeholder="8,5"
+                           step="any"
+                           {{ if .Movie }}
+                           value={{ .Movie.KpRating }}
+                           {{end}}>
+                    <label for="kpRating" class="ms-3">Рейтинг кинопоиска</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col col-lg-5 mb-3">
+                    <label for="genre" class="mb-2">Жанры</label>
+                    <select name="genreId[]" id="genre" class="form-select" required multiple="multiple">
+                        {{range .GenreList}}
+                        <option  value="{{ .ID }}">
+                            {{ .Title }}
+                        </option>
+                        {{end}}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-floating mb-3">
+                    <input type="url" class="form-control" required name="videoLink" id="videoLink" placeholder="http://site/video?id=123"
+                           {{ if .Movie }}
+                           value={{ .Movie.VideoLink }}
+                           {{end}}>
+                    <label for="videoLink" class="ms-3">Ссылка на видео</label>
+                </div>
+
+                <div class="col form-floating mb-3">
+                    <input type="url" class="form-control" required id="pictureLink" name="pictureLink" placeholder="2021"
+                           {{ if .Movie }}
+                           value={{ .Movie.PictureLink }}
+                           {{end}}>
+                    <label for="pictureLink" class="ms-3">Ссылка на постер</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col form-floating mb-3">
+                        <textarea class="form-control"  required id="description" name="description" placeholder="2021" style="height: 210px">{{ if .Movie }}{{ .Movie.Description }}{{end}}</textarea>
+                    <label for="description" class="ms-3">Описание</label>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <button type="submit" name="submit" class="btn btn-success mt-5 mb-5">
+                    {{ if .Movie }}
+                    Изменить
+                    {{else}}
+                    Добавить
+                    {{end}}
+                    фильм
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{template "script" .}}
+
+<script type="text/javascript">
+    window.onload = function() {
+        $('.movie-head').addClass("active");
+
+        let genres = $("#genre");
+        genres.select2();
+        let genreListIds = [];
+        let movieId;
+        {{range $key, $value := .MovieHasGenreList}}
+            {{range $value}}
+                genreListIds.push("{{.GenreID}}");
+            {{end}}
+        {{end}}
+        genres.val(genreListIds).trigger("change");
+    };
+</script>

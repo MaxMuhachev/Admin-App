@@ -1,0 +1,94 @@
+{{block "base" .}}
+    <!DOCTYPE html>
+    <html lang=ru>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <title>Контент</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link href="/static/css/style.css" rel="stylesheet"/>
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">  </head>
+    <body>
+{{end}}
+
+{{block "header" .}}
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="/movies">Контент</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobile-nav" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mobile-nav">
+                <ul class="nav navbar-nav navbar-left">
+                    <li class="nav-item">
+                        <a href="/movies" class="nav-link movie-head">Работа с фильмами</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/genres" class="nav-link genre-head">Работа с жанрами</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/comments" class="nav-link comments-view-head">Работа с комментариями</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/statistic" class="nav-link statistic-head">Статистика</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/reports" class="nav-link reports-head">Отчётность</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/employees" class="nav-link employees-head">Редактирование профиля сотрудников</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <a href="/" class="nav-link bg-danger text-white">Выйти</a>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- End of Header -->
+{{end}}
+
+{{block "header-users" .}}
+    <!-- Header by User-->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="/movies-search">Контент</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobile-nav" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mobile-user-nav">
+                <ul class="nav navbar-nav navbar-left">
+                    <li class="nav-item">
+                        <a href="/movies-search" class="nav-link movies-search-head">Работа с фильмами</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/user/comments" class="nav-link comments-user-head">Работа с комментариями</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/user/edit" class="nav-link user-head">Отредактировать свой профиль</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <a href="/" class="nav-link bg-danger text-white">Выйти</a>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- End of Header -->
+{{end}}
+
+{{block "script" .}}
+        <script defer type="text/javascript" src="/static/js/jquery.js"></script>
+        <script defer type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+        <script defer type="text/javascript" src="/static/js/script.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
+        <script src="https://kit.fontawesome.com/91ccfae330.js" crossorigin="anonymous"></script>
+{{end}}
+    </body>
+</html>
