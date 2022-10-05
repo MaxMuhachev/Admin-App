@@ -3,6 +3,7 @@ package app
 import (
 	"content/src/config"
 	"content/src/utils"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
@@ -22,5 +23,7 @@ func NewConnect() *Connect {
 }
 
 func CloseConnect(s *Connect) {
-	defer s.Mysql.Close()
+	if err := s.Mysql.Close(); err != nil {
+		_ = fmt.Errorf("could not close connection MySQL:%v", err)
+	}
 }
