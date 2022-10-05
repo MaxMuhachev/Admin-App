@@ -145,11 +145,10 @@ func HandlerEditPostUser(w http.ResponseWriter, r *http.Request) {
 		)
 
 		app.CloseConnect(connect)
-		var updatedUser *models.User
 		if !utils.ThrowError(err, w) {
 			utils.ClearTokenHandler(w, config.USER_PERSMISSION)
 			utils.SetCookie(w, config.USER_PERSMISSION, user.Email)
-			app.RenderTemplate(w, "user/edit/content-edit-user", &app.Page{Title: utils.USER, User: updatedUser, Success: utils.USER_SAVED}, &err)
+			app.RenderTemplate(w, "user/edit/content-edit-user", &app.Page{Title: utils.USER, User: user, Success: utils.USER_SAVED}, &err)
 		}
 
 	}
