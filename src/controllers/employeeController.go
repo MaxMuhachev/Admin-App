@@ -33,7 +33,7 @@ func GetEmployees() ([]*models.Employee, error) {
 			res = append(res, &employee)
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, err
 }
 
@@ -42,12 +42,8 @@ func HandlerEditEmployee(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		email := r.Form.Get("email")
 
-		connect := app.NewConnect()
-
 		employee, err := GetEmployeeById(email)
 		app.RenderTemplate(w, "employees/edit/content-edit-employee", &app.Page{Title: utils.EMPLOYEES, Employee: employee}, &err)
-
-		app.CloseConnect(connect)
 	}
 }
 
@@ -78,7 +74,7 @@ func HandlerCreatePostEmployee(w http.ResponseWriter, r *http.Request) {
 			r.Form.Set("oldEmail", employee.Email)
 			http.Redirect(w, r, "/employees/edit", http.StatusTemporaryRedirect)
 		}
-		app.CloseConnect(connect)
+
 	}
 }
 
@@ -100,7 +96,7 @@ func GetEmployeeById(email string) (*models.Employee, error) {
 			res = &employee
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, nil
 }
 
@@ -122,7 +118,7 @@ func GetEmployeeByEmailPassword(email string, password string) (*models.Employee
 			res = &employee
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, nil
 }
 
@@ -145,7 +141,6 @@ func HandlerEditPostEmployee(w http.ResponseWriter, r *http.Request) {
 			oldEmail,
 		)
 
-		app.CloseConnect(connect)
 		var updatedEmployee *models.Employee
 		if err == nil {
 			updatedEmployee, err = GetEmployeeById(employee.Email)
@@ -170,7 +165,7 @@ func HandlerDeletePostEmployee(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("1"))
 			w.WriteHeader(http.StatusOK)
 		}
-		app.CloseConnect(connect)
+
 	}
 }
 

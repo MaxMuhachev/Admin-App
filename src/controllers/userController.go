@@ -54,7 +54,7 @@ func GetUsersSelect(search string, limit uint, page uint) ([]models.DataSelect, 
 			res = append(res, user)
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, err
 }
 
@@ -67,7 +67,7 @@ func GetDoubleAttrResult(query string, search string, search2 string) (uint, err
 	if err != nil {
 		return 0, err
 	}
-	app.CloseConnect(connect)
+
 	return res, err
 }
 
@@ -89,7 +89,7 @@ func GetUserByEmailPassword(email string, password string) (*models.User, error)
 			res = &user
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, nil
 }
 
@@ -97,12 +97,9 @@ func HandlerEditUser(w http.ResponseWriter, r *http.Request) {
 	if utils.HasCookieUserWriteHeader(w, r) {
 		userEmail, _ := r.Cookie(config.USER_PERSMISSION)
 
-		connect := app.NewConnect()
-
 		user, err := GetUserById(userEmail.Value)
 		app.RenderTemplate(w, "user/edit/content-edit-user", &app.Page{Title: utils.USER, User: user}, &err)
 
-		app.CloseConnect(connect)
 	}
 }
 
@@ -124,7 +121,7 @@ func GetUserById(email string) (*models.User, error) {
 			res = &employee
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, nil
 }
 
@@ -144,7 +141,6 @@ func HandlerEditPostUser(w http.ResponseWriter, r *http.Request) {
 			oldEmail,
 		)
 
-		app.CloseConnect(connect)
 		if !utils.ThrowError(err, w) {
 			utils.ClearTokenHandler(w, config.USER_PERSMISSION)
 			utils.SetCookie(w, config.USER_PERSMISSION, user.Email)

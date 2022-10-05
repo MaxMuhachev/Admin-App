@@ -17,7 +17,7 @@ func HandlerUserComments(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlerViewComments(w http.ResponseWriter, r *http.Request) {
-	if utils.HasCookieUserWriteHeader(w, r) {
+	if utils.HasCookieAdmin(r) {
 		app.RenderTemplate(w, "comments/content-comments", &app.Page{}, nil)
 	}
 }
@@ -43,7 +43,6 @@ func HandlerGetCommentById(w http.ResponseWriter, r *http.Request) {
 				res = append(res, &comment)
 			}
 		}
-		app.CloseConnect(connect)
 
 		json.NewEncoder(w).Encode(res)
 		w.WriteHeader(http.StatusOK)
@@ -73,7 +72,6 @@ func HandlerGetCommentsByMovie(w http.ResponseWriter, r *http.Request) {
 				res = append(res, &comment)
 			}
 		}
-		app.CloseConnect(connect)
 
 		json.NewEncoder(w).Encode(res)
 		w.WriteHeader(http.StatusOK)
@@ -107,7 +105,7 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		app.CloseConnect(connect)
+
 	}
 }
 
@@ -128,7 +126,7 @@ func HandleUpdatePostComment(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(&res)
 			w.WriteHeader(http.StatusOK)
 		}
-		app.CloseConnect(connect)
+
 	}
 }
 
@@ -145,6 +143,6 @@ func HandleDeleteComment(w http.ResponseWriter, r *http.Request) {
 		} else {
 			json.NewEncoder(w).Encode("")
 		}
-		app.CloseConnect(connect)
+
 	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"content/src/app"
 	"content/src/controllers"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
@@ -10,6 +11,7 @@ import (
 
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
+	app.CreateConnect()
 
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("src/resources/static"))))
 

@@ -111,7 +111,7 @@ func saveMovieHasGenres(
 			utils.ThrowError(err, w)
 		}
 	}
-	app.CloseConnect(connect)
+
 }
 
 func getMovieHasGenreForChange(
@@ -198,6 +198,6 @@ func GetMovieHasGenres(query string, arg1 string) (map[models.MovieLight][]*mode
 			res[movieLight] = append(res[movieLight], &genreLight)
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, nil
 }

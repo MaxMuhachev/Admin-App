@@ -3,7 +3,6 @@ package app
 import (
 	"content/src/config"
 	"content/src/utils"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
@@ -12,18 +11,29 @@ type Connect struct {
 	Mysql *sqlx.DB
 }
 
-func NewConnect() *Connect {
-	db, err := sqlx.Open("mysql", utils.FormatConnect(config.GetDnsConfig()))
+var c *Connect
 
+func NewConnect() *Connect {
+	return c
+}
+func CreateConnect() *Connect {
+	db, err := sqlx.Open("mysql", utils.FormatConnect(config.GetDnsConfig()))
+	db.SetMaxIdleConns(2)
+	db.SetMaxOpenConns(5)
 	if err != nil {
 		panic(err.Error())
 	}
+	c = &Connect{db}
 
-	return &Connect{db}
+	return c
 }
 
-func CloseConnect(s *Connect) {
-	if err := s.Mysql.Close(); err != nil {
-		_ = fmt.Errorf("could not close connection MySQL:%v", err)
-	}
-}
+//func CloseConnect() {
+//	defer func(Mysql *sqlx.DB) {
+//		err := Mysql.Close()
+//		if err != nil {
+//			log.Println(err)
+//		}
+//		c = nil
+//	}(c.Mysql)
+//}

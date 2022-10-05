@@ -53,6 +53,6 @@ func GetCompanySelect(search string, limit uint, page uint) ([]models.DataSelect
 			res = append(res, company)
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, err
 }

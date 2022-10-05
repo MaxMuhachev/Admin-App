@@ -44,7 +44,6 @@ func HandlerReportFilmWithDate(w http.ResponseWriter, r *http.Request) {
 				res = append(res, &movieStatistic)
 			}
 		}
-		app.CloseConnect(connect)
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(res)
@@ -80,7 +79,6 @@ func HandlerReportUsersWithDate(w http.ResponseWriter, r *http.Request) {
 				res = append(res, &usersReport)
 			}
 		}
-		app.CloseConnect(connect)
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -121,7 +119,6 @@ func HandlerReportCommentsByMovieUser(w http.ResponseWriter, r *http.Request) {
 				res = append(res, &commentReport)
 			}
 		}
-		app.CloseConnect(connect)
 
 		json.NewEncoder(w).Encode(res)
 		w.WriteHeader(http.StatusOK)

@@ -34,7 +34,7 @@ func GetGenres() ([]*models.Genre, error) {
 			res = append(res, &genre)
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, err
 }
 
@@ -65,7 +65,7 @@ func HandlerCreatePostGenre(w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, "/genres/edit", http.StatusTemporaryRedirect)
 			}
 		}
-		app.CloseConnect(connect)
+
 	}
 }
 
@@ -75,12 +75,8 @@ func HandlerEditGenre(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		id := r.Form.Get("id")
 
-		connect := app.NewConnect()
-
 		genre, err := GetGenreById(utils.ConvertUint(id))
 		app.RenderTemplate(w, "genres/edit/content-edit-genres", &app.Page{Title: utils.GENRES, Genre: genre}, &err)
-
-		app.CloseConnect(connect)
 	}
 }
 
@@ -96,7 +92,6 @@ func HandlerEditPostGenre(w http.ResponseWriter, r *http.Request) {
 			genre.ID,
 		)
 
-		app.CloseConnect(connect)
 		app.RenderTemplate(w, "genres/edit/content-edit-genres", &app.Page{Title: utils.GENRES, Genre: genre, Success: utils.GENRE_SAVED}, &err)
 	}
 }
@@ -148,7 +143,6 @@ func HandlerDeletePostGenre(w http.ResponseWriter, r *http.Request) {
 			utils.ThrowError(err, w)
 		}
 
-		app.CloseConnect(connect)
 		w.Write([]byte("1"))
 		w.WriteHeader(http.StatusOK)
 	}

@@ -42,7 +42,6 @@ func HandlerStatisticFilmWithDate(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		app.CloseConnect(connect)
 
 		w.Write([]byte(utils.ConvertToString(uint8(res))))
 		w.WriteHeader(http.StatusOK)
@@ -76,7 +75,6 @@ func HandlerStatisticUsersWithDate(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		app.CloseConnect(connect)
 
 		w.Write([]byte(utils.ConvertToString(uint8(res))))
 		w.WriteHeader(http.StatusOK)
@@ -112,7 +110,6 @@ func HandlerStatisticCommentsWithDate(w http.ResponseWriter, r *http.Request) {
 				res = append(res, &movieStatistic)
 			}
 		}
-		app.CloseConnect(connect)
 
 		json.NewEncoder(w).Encode(res)
 		w.WriteHeader(http.StatusOK)

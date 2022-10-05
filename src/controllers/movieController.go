@@ -86,7 +86,7 @@ func GetMoviesByFilter(movie, genre string) ([]*models.Movie, error) {
 			res = append(res, &movie)
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, err
 }
 
@@ -114,7 +114,7 @@ func GetMovies(query string) ([]*models.Movie, error) {
 			res = append(res, &movie)
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, err
 }
 
@@ -136,7 +136,7 @@ func GetMovieSelect(search string, limit uint, page uint) ([]models.DataSelect, 
 			res = append(res, movie)
 		}
 	}
-	app.CloseConnect(connect)
+
 	return res, err
 }
 
@@ -149,7 +149,7 @@ func GetSingleResult(query string, search string) (uint, error) {
 	if err != nil {
 		return 0, err
 	}
-	app.CloseConnect(connect)
+
 	return res, err
 }
 
@@ -202,7 +202,7 @@ func HandlerCreatePostMovie(w http.ResponseWriter, r *http.Request) {
 			if !utils.ThrowError(err, w) {
 				app.RenderTemplate(w, "movies/edit/content-edit-movies", &app.Page{Title: utils.MOVIE, Movie: movie, MovieHasGenreList: movieHasGenresMap, GenreList: genres, Success: utils.MOVIE_SAVED}, &err)
 			}
-			app.CloseConnect(connect)
+
 		} else {
 			HandlerEditPostMovie(w, r)
 		}
@@ -216,8 +216,6 @@ func HandlerEditMovie(w http.ResponseWriter, r *http.Request) {
 		movieId := r.Form.Get("id")
 		var genres []*models.Genre
 
-		connect := app.NewConnect()
-
 		movie, err := GetMovieById(utils.ConvertUint(movieId))
 		if !utils.ThrowError(err, w) {
 			movieHasGenre, err := GetMovieHasGenres(storage.GetMovieGenreByMovieID, movieId)
@@ -228,7 +226,6 @@ func HandlerEditMovie(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		app.CloseConnect(connect)
 	}
 }
 
@@ -266,7 +263,7 @@ func HandlerEditPostMovie(w http.ResponseWriter, r *http.Request) {
 		if !utils.ThrowError(err, w) {
 			app.RenderTemplate(w, "movies/edit/content-edit-movies", &app.Page{Title: utils.MOVIE, Movie: movie, MovieHasGenreList: movieHasGenresMap, GenreList: genres, Success: utils.MOVIE_SAVED}, &err)
 		}
-		app.CloseConnect(connect)
+
 	}
 }
 
@@ -286,7 +283,6 @@ func HandlerDeletePostMovie(w http.ResponseWriter, r *http.Request) {
 			utils.ThrowError(err, w)
 		}
 
-		app.CloseConnect(connect)
 		w.Write([]byte("1"))
 		w.WriteHeader(http.StatusOK)
 	}
