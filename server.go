@@ -70,7 +70,7 @@ func main() {
 	addPostRoute("/user/comment", router, controllers.HandleUpdatePostComment)
 	addPostRoute("/user/comment/delete", router, controllers.HandleDeleteComment)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }
 
 func addGetRoute(path string, router *mux.Router, handler http.HandlerFunc) {
