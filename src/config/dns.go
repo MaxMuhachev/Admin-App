@@ -16,10 +16,10 @@ type (
 )
 
 const (
-	username = "root"
-	password = "root1234"
-	hostname = "127.0.0.1:3306"
-	dbname   = "content"
+	username = "uf6c4ofdy7rwuroo"
+	password = "KOBI3FANKlfw8E2zEEuP"
+	hostname = "bvgghoxnzxbvck2zfnld-mysql.services.clever-cloud.com:3306"
+	dbname   = "bvgghoxnzxbvck2zfnld"
 )
 
 func GetDnsConfig() Dns {
