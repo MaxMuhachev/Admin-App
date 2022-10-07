@@ -61,7 +61,7 @@
                     let buttons;
                     if (data != null) {
                         buttons = getButtonsForDelUpd(data);
-                        dataTable.prepend(`<tr class="comment${data.ID}"><td>` + buttons + `</td><td>${data.MovieTitle}</td><td>${data.UserEmail}</td><td>${data.CommentText}</td><td>${new Date(data.CommentDate).toLocaleDateString()}</td></tr>`)
+                        dataTable.prepend(`<tr class="comment${data.ID}"><td>` + buttons + `</td><td>${data.MovieTitle}</td><td>${data.UserEmail}</td><td class="commentText">${data.CommentText}</td><td>${new Date(data.CommentDate).toLocaleDateString()}</td></tr>`)
                     }
                 },
                 error: function (response) {

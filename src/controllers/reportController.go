@@ -27,22 +27,11 @@ func HandlerReportFilmWithDate(w http.ResponseWriter, r *http.Request) {
 		startDate := r.Form.Get("startDate")
 		endDate := r.Form.Get("endDate")
 
-		connect := app.NewConnect()
-
 		var res []*models.MovieReport
 
-		rows, err := connect.Mysql.Queryx(storage.GetReportMovie, startDate, endDate)
+		err := app.Conn.Mysql.Select(&res, storage.GetReportMovie, startDate, endDate)
 		if err != nil {
 			utils.ThrowError(err, w)
-		} else {
-			for rows.Next() {
-				var movieStatistic = models.MovieReport{}
-				err := rows.StructScan(&movieStatistic)
-				if err != nil {
-					utils.ThrowError(err, w)
-				}
-				res = append(res, &movieStatistic)
-			}
 		}
 
 		w.WriteHeader(http.StatusOK)
@@ -62,23 +51,9 @@ func HandlerReportUsersWithDate(w http.ResponseWriter, r *http.Request) {
 		startDate := r.Form.Get("startDate")
 		endDate := r.Form.Get("endDate")
 
-		connect := app.NewConnect()
-
 		var res []*models.UsersReport
 
-		rows, err := connect.Mysql.Queryx(storage.GetReportUsers, startDate, endDate)
-		if err != nil {
-			utils.ThrowError(err, w)
-		} else {
-			for rows.Next() {
-				var usersReport = models.UsersReport{}
-				err := rows.StructScan(&usersReport)
-				if err != nil {
-					utils.ThrowError(err, w)
-				}
-				res = append(res, &usersReport)
-			}
-		}
+		err := app.Conn.Mysql.Select(&res, storage.GetReportUsers, startDate, endDate)
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -102,22 +77,11 @@ func HandlerReportCommentsByMovieUser(w http.ResponseWriter, r *http.Request) {
 		movieId := r.Form.Get("movie")
 		userFio := r.Form.Get("user")
 
-		connect := app.NewConnect()
-
 		var res []*models.Comment
 
-		rows, err := connect.Mysql.Queryx(storage.GetReportComments, movieId, userFio)
+		err := app.Conn.Mysql.Select(&res, storage.GetReportComments, movieId, userFio)
 		if err != nil {
 			utils.ThrowError(err, w)
-		} else {
-			for rows.Next() {
-				var commentReport = models.Comment{}
-				err := rows.StructScan(&commentReport)
-				if err != nil {
-					utils.ThrowError(err, w)
-				}
-				res = append(res, &commentReport)
-			}
 		}
 
 		json.NewEncoder(w).Encode(res)

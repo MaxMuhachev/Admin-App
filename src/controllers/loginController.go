@@ -19,27 +19,23 @@ func HandlerIndex(w http.ResponseWriter, r *http.Request) {
 func HandlerPostIndex(w http.ResponseWriter, r *http.Request) {
 	password, email := getFormParams(r)
 
-	employee, err := GetEmployeeByEmailPassword(email, password)
+	employee := GetEmployeeByEmailPassword(email, password)
 	if employee != nil {
 		utils.SetCookie(w, config.MANAGER_PERSMISSION, email)
 		app.RenderTemplate(w, "index", &app.Page{Title: utils.HELLO + employee.FIO + "!"}, nil)
 	} else {
-		if err != nil {
-			app.RenderTemplate(w, "error", &app.Page{Error: &err}, nil)
-		} else {
-			getUserOrError(w, err, email, password)
-		}
+		getUserOrError(w, email, password)
 	}
 }
 
-func getUserOrError(w http.ResponseWriter, err error, email string, password string) {
+func getUserOrError(w http.ResponseWriter, email string, password string) {
 	var user *models.User
-	user, err = GetUserByEmailPassword(email, password)
+	user, err := GetUserByEmailPassword(email, password)
 	if user != nil {
 		utils.SetCookie(w, config.USER_PERSMISSION, email)
 		app.RenderTemplate(w, "index-user", &app.Page{Title: utils.HELLO + user.FIO + "!"}, &err)
 	} else {
-		if err == nil {
+		if err == nil || err.Error() == utils.NO_ROWS_RESULT_SET {
 			err = errors.New(utils.LOGIN_OR_PASSWORD_NOT_RIGHT)
 		}
 		app.RenderTemplate(w, "error", &app.Page{Error: &err}, nil)

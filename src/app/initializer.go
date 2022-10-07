@@ -11,29 +11,29 @@ type Connect struct {
 	Mysql *sqlx.DB
 }
 
-var c *Connect
+var Conn *Connect
 
-func NewConnect() *Connect {
-	return c
-}
-func CreateConnect() *Connect {
+func NewConnect() {
 	db, err := sqlx.Open("mysql", utils.FormatConnect(config.GetDnsConfig()))
-	db.SetMaxIdleConns(2)
-	db.SetMaxOpenConns(5)
+
 	if err != nil {
 		panic(err.Error())
 	}
-	c = &Connect{db}
+	Conn = &Connect{db}
 
-	return c
+	err = db.Ping()
+	if err != nil {
+		panic(err.Error())
+	}
+	Conn = &Connect{db}
+
 }
 
-//func CloseConnect() {
+//func  CloseConnect() {
 //	defer func(Mysql *sqlx.DB) {
 //		err := Mysql.Close()
 //		if err != nil {
-//			log.Println(err)
+//			log.Println(fmt.Errorf("could not close connection MySQL:%v", err))
 //		}
-//		c = nil
 //	}(c.Mysql)
 //}

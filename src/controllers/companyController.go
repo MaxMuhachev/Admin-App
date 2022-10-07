@@ -36,23 +36,11 @@ func HandlerApiCompany(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCompanySelect(search string, limit uint, page uint) ([]models.DataSelect, error) {
-	connect := app.NewConnect()
-
 	var res []models.DataSelect
 
-	rows, err := connect.Mysql.Queryx(storage.GetCompanySelect, search, limit, page*limit)
+	err := app.Conn.Mysql.Select(&res, storage.GetCompanySelect, search, limit, page*limit)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var company = models.DataSelect{}
-			err := rows.StructScan(&company)
-			if err != nil {
-				return nil, err
-			}
-			res = append(res, company)
-		}
 	}
-
 	return res, err
 }

@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	_ "github.com/go-sql-driver/mysql"
 	"net/http"
-	"strings"
 )
 
 func HandlerMovies(w http.ResponseWriter, r *http.Request) {
@@ -69,22 +68,12 @@ func HandlerPostMoviesFilterApi(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMoviesByFilter(movie, genre string) ([]*models.Movie, error) {
-	connect := app.NewConnect()
 
 	var res []*models.Movie
 
-	rows, err := connect.Mysql.Queryx(storage.GetMoviesByFilter, movie, genre)
+	err := app.Conn.Mysql.Select(&res, storage.GetMoviesByFilter, movie, genre)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var movie = models.Movie{}
-			err := rows.StructScan(&movie)
-			if err != nil {
-				return nil, err
-			}
-			res = append(res, &movie)
-		}
 	}
 
 	return res, err
@@ -97,59 +86,36 @@ func RenderMovies(w http.ResponseWriter, error *error) {
 }
 
 func GetMovies(query string) ([]*models.Movie, error) {
-	connect := app.NewConnect()
 
 	var res []*models.Movie
 
-	rows, err := connect.Mysql.Queryx(query)
+	err := app.Conn.Mysql.Select(&res, query)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var movie = models.Movie{}
-			err := rows.StructScan(&movie)
-			if err != nil {
-				return nil, err
-			}
-			res = append(res, &movie)
-		}
 	}
 
 	return res, err
 }
 
 func GetMovieSelect(search string, limit uint, page uint) ([]models.DataSelect, error) {
-	connect := app.NewConnect()
-
 	var res []models.DataSelect
 
-	rows, err := connect.Mysql.Queryx(storage.GetMoviesSelect, search, limit, page*limit)
+	err := app.Conn.Mysql.Select(&res, storage.GetMoviesSelect, search, limit, page*limit)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var movie = models.DataSelect{}
-			err := rows.StructScan(&movie)
-			if err != nil {
-				return nil, err
-			}
-			res = append(res, movie)
-		}
 	}
-
 	return res, err
 }
 
+//
 func GetSingleResult(query string, search string) (uint, error) {
-	connect := app.NewConnect()
 
 	var res uint
 
-	err := connect.Mysql.Get(&res, query, search)
+	err := app.Conn.Mysql.Get(&res, query, search)
 	if err != nil {
 		return 0, err
 	}
-
 	return res, err
 }
 
@@ -170,8 +136,7 @@ func HandlerCreatePostMovie(w http.ResponseWriter, r *http.Request) {
 			permission, _ := r.Cookie(config.MANAGER_PERSMISSION)
 			movie.AddEmpl = permission.Value
 
-			connect := app.NewConnect()
-			_, err := connect.Mysql.Queryx(
+			_, err := app.Conn.Mysql.Query(
 				storage.CreateMovie,
 				movie.Title,
 				movie.Year,
@@ -184,7 +149,7 @@ func HandlerCreatePostMovie(w http.ResponseWriter, r *http.Request) {
 				movie.AddEmpl,
 			)
 
-			movieRow := connect.Mysql.QueryRow(storage.GetLastMovieId)
+			movieRow := app.Conn.Mysql.QueryRow(storage.GetLastMovieId)
 			var movieId uint8
 			err = movieRow.Scan(&movieId)
 			r.Form.Add("id", utils.ConvertToString(movieId))
@@ -226,6 +191,7 @@ func HandlerEditMovie(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+
 	}
 }
 
@@ -235,8 +201,6 @@ func HandlerEditPostMovie(w http.ResponseWriter, r *http.Request) {
 		movie := ParseFormMovie(r)
 		movieHasGenresMap := ParseMovieGenreForm(r)
 
-		connect := app.NewConnect()
-
 		if len(movieHasGenresMap) > 0 {
 			movieHasGenreDB, err := GetMovieHasGenres(storage.GetMovieGenreByMovieID, utils.ConvertToString(movie.ID))
 			if !utils.ThrowError(err, w) {
@@ -245,7 +209,7 @@ func HandlerEditPostMovie(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Query(
 			storage.UpdateMovie,
 			movie.Title,
 			movie.Year,
@@ -274,8 +238,7 @@ func HandlerDeletePostMovie(w http.ResponseWriter, r *http.Request) {
 		movie.DateAdd = utils.GetNowString()
 		movie.DateLastEdit = movie.DateAdd
 
-		connect := app.NewConnect()
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Query(
 			storage.DeleteMovieByMovieID,
 			movie.ID,
 		)
@@ -344,24 +307,11 @@ func ParseMovieGenreForm(r *http.Request) map[models.MovieLight][]*models.GenreL
 }
 
 func GetMovieById(id uint64) (*models.Movie, error) {
-	connect := app.NewConnect()
+	res := &models.Movie{}
 
-	var res *models.Movie
-
-	rows, err := connect.Mysql.Queryx(storage.GetMovieByID, id)
+	err := app.Conn.Mysql.Get(res, storage.GetMovieByID, id)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var movie = models.Movie{}
-			err = rows.StructScan(&movie)
-			if err != nil {
-				return nil, err
-			}
-			movie.DateLastEdit = strings.Split(movie.DateLastEdit, " ")[0]
-			movie.DateAdd = strings.Split(movie.DateAdd, " ")[0]
-			res = &movie
-		}
 	}
 	return res, nil
 }

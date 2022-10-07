@@ -27,24 +27,15 @@ func HandlerStatisticFilmWithDate(w http.ResponseWriter, r *http.Request) {
 		startDate := r.Form.Get("startDate")
 		endDate := r.Form.Get("endDate")
 
-		connect := app.NewConnect()
-
 		var res uint
 
-		rows, err := connect.Mysql.Queryx(storage.GetStatisticMovie, startDate, endDate)
+		err := app.Conn.Mysql.Get(&res, storage.GetStatisticMovie, startDate, endDate)
 		if err != nil {
 			utils.ThrowError(err, w)
 		} else {
-			for rows.Next() {
-				err := rows.Scan(&res)
-				if err != nil {
-					utils.ThrowError(err, w)
-				}
-			}
+			w.Write([]byte(utils.ConvertToString(uint8(res))))
+			w.WriteHeader(http.StatusOK)
 		}
-
-		w.Write([]byte(utils.ConvertToString(uint8(res))))
-		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -60,24 +51,15 @@ func HandlerStatisticUsersWithDate(w http.ResponseWriter, r *http.Request) {
 		startDate := r.Form.Get("startDate")
 		endDate := r.Form.Get("endDate")
 
-		connect := app.NewConnect()
-
 		var res uint
 
-		rows, err := connect.Mysql.Queryx(storage.GetStatisticUsers, startDate, endDate)
+		err := app.Conn.Mysql.Get(&res, storage.GetStatisticUsers, startDate, endDate)
 		if err != nil {
 			utils.ThrowError(err, w)
 		} else {
-			for rows.Next() {
-				err := rows.Scan(&res)
-				if err != nil {
-					utils.ThrowError(err, w)
-				}
-			}
+			w.Write([]byte(utils.ConvertToString(uint8(res))))
+			w.WriteHeader(http.StatusOK)
 		}
-
-		w.Write([]byte(utils.ConvertToString(uint8(res))))
-		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -93,25 +75,14 @@ func HandlerStatisticCommentsWithDate(w http.ResponseWriter, r *http.Request) {
 		startDate := r.Form.Get("startDate")
 		endDate := r.Form.Get("endDate")
 
-		connect := app.NewConnect()
-
 		var res []*models.CommentStatistic
 
-		rows, err := connect.Mysql.Queryx(storage.GetStatisticComments, startDate, endDate)
+		err := app.Conn.Mysql.Select(&res, storage.GetStatisticComments, startDate, endDate)
 		if err != nil {
 			utils.ThrowError(err, w)
 		} else {
-			for rows.Next() {
-				var movieStatistic = models.CommentStatistic{}
-				err := rows.StructScan(&movieStatistic)
-				if err != nil {
-					utils.ThrowError(err, w)
-				}
-				res = append(res, &movieStatistic)
-			}
+			json.NewEncoder(w).Encode(res)
+			w.WriteHeader(http.StatusOK)
 		}
-
-		json.NewEncoder(w).Encode(res)
-		w.WriteHeader(http.StatusOK)
 	}
 }

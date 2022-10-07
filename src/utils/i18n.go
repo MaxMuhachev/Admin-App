@@ -14,3 +14,5 @@ const USER_SAVED = "Пользователь успешно сохранён!"
 const MOVIE_HAS_GENRE_SAVED = "Связь фильмов с жанрами успешно сохранена!"
 
 const LOGIN_OR_PASSWORD_NOT_RIGHT = "Логин или пароль не верный!"
+
+const NO_ROWS_RESULT_SET = "sql: no rows in result set"

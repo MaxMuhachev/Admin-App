@@ -17,24 +17,13 @@ func HandlerGenres(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetGenres() ([]*models.Genre, error) {
-	connect := app.NewConnect()
 
 	var res []*models.Genre
 
-	rows, err := connect.Mysql.Queryx(storage.GetGenres)
+	err := app.Conn.Mysql.Select(&res, storage.GetGenres)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var genre = models.Genre{}
-			err := rows.StructScan(&genre)
-			if err != nil {
-				return nil, err
-			}
-			res = append(res, &genre)
-		}
 	}
-
 	return res, err
 }
 
@@ -49,8 +38,7 @@ func HandlerCreatePostGenre(w http.ResponseWriter, r *http.Request) {
 
 		genre := ParseGenreForm(r)
 
-		connect := app.NewConnect()
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Query(
 			storage.CreateGenre,
 			genre.Title,
 			genre.Description,
@@ -58,7 +46,7 @@ func HandlerCreatePostGenre(w http.ResponseWriter, r *http.Request) {
 
 		if !utils.ThrowError(err, w) {
 			var genreId uint8
-			genreRow := connect.Mysql.QueryRow(storage.GetGenreIdLast)
+			genreRow := app.Conn.Mysql.QueryRow(storage.GetGenreIdLast)
 			err = genreRow.Scan(&genreId)
 			if !utils.ThrowError(err, w) {
 				r.Form.Set("id", utils.ConvertToString(genreId))
@@ -83,9 +71,8 @@ func HandlerEditGenre(w http.ResponseWriter, r *http.Request) {
 func HandlerEditPostGenre(w http.ResponseWriter, r *http.Request) {
 	if utils.HasCookieAdminWriteHeader(w, r) {
 		genre := ParseGenreForm(r)
-		connect := app.NewConnect()
 
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Query(
 			storage.UpdateGenre,
 			genre.Title,
 			genre.Description,
@@ -110,22 +97,11 @@ func ParseGenreForm(r *http.Request) *models.Genre {
 }
 
 func GetGenreById(id uint64) (*models.Genre, error) {
-	connect := app.NewConnect()
+	res := &models.Genre{}
 
-	var res *models.Genre
-
-	rows, err := connect.Mysql.Queryx(storage.GetGenreByID, id)
+	err := app.Conn.Mysql.Get(res, storage.GetGenreByID, id)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var genre = models.Genre{}
-			err = rows.StructScan(&genre)
-			if err != nil {
-				return nil, err
-			}
-			res = &genre
-		}
 	}
 	return res, nil
 }
@@ -134,8 +110,7 @@ func HandlerDeletePostGenre(w http.ResponseWriter, r *http.Request) {
 	if utils.HasCookieAdminWriteHeader(w, r) {
 		genre := ParseGenreForm(r)
 
-		connect := app.NewConnect()
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Query(
 			storage.DeleteGenreByGenreID,
 			genre.ID,
 		)

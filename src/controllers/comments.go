@@ -17,7 +17,7 @@ func HandlerUserComments(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlerViewComments(w http.ResponseWriter, r *http.Request) {
-	if utils.HasCookieAdmin(r) {
+	if utils.HasCookieUserWriteHeader(w, r) {
 		app.RenderTemplate(w, "comments/content-comments", &app.Page{}, nil)
 	}
 }
@@ -28,23 +28,14 @@ func HandlerGetCommentById(w http.ResponseWriter, r *http.Request) {
 		commentId := r.Form.Get("commentId")
 		userEmail, _ := r.Cookie(config.USER_PERSMISSION)
 
-		connect := app.NewConnect()
-
 		var res []*models.Comment
 
-		rows, err := connect.Mysql.Queryx(storage.GetCommentById, userEmail.Value, commentId)
+		err := app.Conn.Mysql.Select(&res, storage.GetCommentById, userEmail.Value, commentId)
 		if !utils.ThrowError(err, w) {
-			for rows.Next() {
-				var comment = models.Comment{}
-				err := rows.StructScan(&comment)
-				if err != nil {
-					utils.ThrowError(err, w)
-				}
-				res = append(res, &comment)
-			}
+			json.NewEncoder(w).Encode(&res)
+			w.WriteHeader(http.StatusOK)
 		}
 
-		json.NewEncoder(w).Encode(res)
 		w.WriteHeader(http.StatusOK)
 	}
 }
@@ -55,26 +46,13 @@ func HandlerGetCommentsByMovie(w http.ResponseWriter, r *http.Request) {
 		movieId := r.Form.Get("movie")
 		userEmail, _ := r.Cookie(config.USER_PERSMISSION)
 
-		connect := app.NewConnect()
-
 		var res []*models.Comment
 
-		rows, err := connect.Mysql.Queryx(storage.GetCommentsByMovie, userEmail.Value, movieId)
-		if err != nil {
-			utils.ThrowError(err, w)
-		} else {
-			for rows.Next() {
-				var comment = models.Comment{}
-				err := rows.StructScan(&comment)
-				if err != nil {
-					utils.ThrowError(err, w)
-				}
-				res = append(res, &comment)
-			}
+		err := app.Conn.Mysql.Select(&res, storage.GetCommentsByMovie, userEmail.Value, movieId)
+		if !utils.ThrowError(err, w) {
+			json.NewEncoder(w).Encode(&res)
+			w.WriteHeader(http.StatusOK)
 		}
-
-		json.NewEncoder(w).Encode(res)
-		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -85,27 +63,15 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 		commentText := r.Form.Get("comment")
 		userEmail, _ := r.Cookie(config.USER_PERSMISSION)
 
-		connect := app.NewConnect()
-
-		_, err := connect.Mysql.Queryx(storage.CreateComment, userEmail.Value, movieId, commentText)
+		_, err := app.Conn.Mysql.Query(storage.CreateComment, userEmail.Value, movieId, commentText)
 
 		res := models.Comment{}
 
-		rows, err := connect.Mysql.Queryx(storage.GetLastCommentByMovieAndEmail, movieId, userEmail.Value)
-		if err != nil {
-			utils.ThrowError(err, w)
-		} else {
-			for rows.Next() {
-				err := rows.StructScan(&res)
-				if err != nil {
-					utils.ThrowError(err, w)
-				} else {
-					json.NewEncoder(w).Encode(&res)
-					w.WriteHeader(http.StatusOK)
-				}
-			}
+		err = app.Conn.Mysql.Get(res, storage.GetLastCommentByMovieAndEmail, movieId, userEmail.Value)
+		if !utils.ThrowError(err, w) {
+			json.NewEncoder(w).Encode(&res)
+			w.WriteHeader(http.StatusOK)
 		}
-
 	}
 }
 
@@ -115,9 +81,7 @@ func HandleUpdatePostComment(w http.ResponseWriter, r *http.Request) {
 		commentId := r.Form.Get("commentId")
 		commentText := r.Form.Get("commentText")
 
-		connect := app.NewConnect()
-
-		_, err := connect.Mysql.Queryx(storage.UpdateComment, commentText, commentId)
+		_, err := app.Conn.Mysql.Query(storage.UpdateComment, commentText, commentId)
 
 		res := models.Comment{}
 
@@ -126,7 +90,6 @@ func HandleUpdatePostComment(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(&res)
 			w.WriteHeader(http.StatusOK)
 		}
-
 	}
 }
 
@@ -134,15 +97,12 @@ func HandleDeleteComment(w http.ResponseWriter, r *http.Request) {
 	if utils.HasCookieUserWriteHeader(w, r) {
 		r.ParseForm()
 		id := r.Form.Get("id")
-		connect := app.NewConnect()
 
-		_, err := connect.Mysql.Queryx(storage.DeleteComment, id)
+		_, err := app.Conn.Mysql.Query(storage.DeleteComment, id)
 
-		if err != nil {
-			utils.ThrowError(err, w)
-		} else {
+		if !utils.ThrowError(err, w) {
 			json.NewEncoder(w).Encode("")
+			w.WriteHeader(http.StatusOK)
 		}
-
 	}
 }

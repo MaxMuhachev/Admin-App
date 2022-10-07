@@ -16,24 +16,12 @@ func HandlerEmployees(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetEmployees() ([]*models.Employee, error) {
-	connect := app.NewConnect()
-
 	var res []*models.Employee
 
-	rows, err := connect.Mysql.Queryx(storage.GetEmployees)
+	err := app.Conn.Mysql.Select(&res, storage.GetEmployees)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var employee = models.Employee{}
-			err := rows.StructScan(&employee)
-			if err != nil {
-				return nil, err
-			}
-			res = append(res, &employee)
-		}
 	}
-
 	return res, err
 }
 
@@ -57,9 +45,7 @@ func HandlerCreatePostEmployee(w http.ResponseWriter, r *http.Request) {
 	if utils.HasCookieAdminWriteHeader(w, r) {
 		employee := ParseEmployeeForm(r)
 
-		connect := app.NewConnect()
-
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Query(
 			storage.CreateEmployee,
 			employee.Email,
 			employee.FIO,
@@ -74,61 +60,35 @@ func HandlerCreatePostEmployee(w http.ResponseWriter, r *http.Request) {
 			r.Form.Set("oldEmail", employee.Email)
 			http.Redirect(w, r, "/employees/edit", http.StatusTemporaryRedirect)
 		}
-
 	}
 }
 
 func GetEmployeeById(email string) (*models.Employee, error) {
-	connect := app.NewConnect()
+	var res = &models.Employee{}
 
-	var res *models.Employee
-
-	rows, err := connect.Mysql.Queryx(storage.GetEmployeeByEmail, email)
+	err := app.Conn.Mysql.Get(res, storage.GetEmployeeByEmail, email)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var employee = models.Employee{}
-			err = rows.StructScan(&employee)
-			if err != nil {
-				return nil, err
-			}
-			res = &employee
-		}
 	}
-
 	return res, nil
 }
 
-func GetEmployeeByEmailPassword(email string, password string) (*models.Employee, error) {
-	connect := app.NewConnect()
+func GetEmployeeByEmailPassword(email string, password string) *models.Employee {
+	res := &models.Employee{}
 
-	var res *models.Employee
-
-	rows, err := connect.Mysql.Queryx(storage.GetEmployeeByEmailPassword, email, password)
+	err := app.Conn.Mysql.Get(res, storage.GetEmployeeByEmailPassword, email, password)
 	if err != nil {
-		return nil, err
-	} else {
-		for rows.Next() {
-			var employee = models.Employee{}
-			err = rows.StructScan(&employee)
-			if err != nil {
-				return nil, err
-			}
-			res = &employee
-		}
+		return nil
 	}
-
-	return res, nil
+	return res
 }
 
 func HandlerEditPostEmployee(w http.ResponseWriter, r *http.Request) {
 	if utils.HasCookieAdminWriteHeader(w, r) {
 		employee := ParseEmployeeForm(r)
 		oldEmail := r.Form.Get("oldEmail")
-		connect := app.NewConnect()
 
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Query(
 			storage.UpdateEmployee,
 			employee.Email,
 			employee.FIO,
@@ -155,9 +115,7 @@ func HandlerDeletePostEmployee(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		employeeId := r.Form.Get("id")
 
-		connect := app.NewConnect()
-
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Query(
 			storage.DeleteEmployee,
 			employeeId,
 		)
@@ -165,7 +123,6 @@ func HandlerDeletePostEmployee(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("1"))
 			w.WriteHeader(http.StatusOK)
 		}
-
 	}
 }
 

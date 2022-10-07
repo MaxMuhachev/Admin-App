@@ -37,60 +37,34 @@ func HandlerApiUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsersSelect(search string, limit uint, page uint) ([]models.DataSelect, error) {
-	connect := app.NewConnect()
 
 	var res = []models.DataSelect{}
 
-	rows, err := connect.Mysql.Queryx(storage.GetUsersSelect, search, search, limit, page*limit)
+	err := app.Conn.Mysql.Select(&res, storage.GetUsersSelect, search, search, limit, page*limit)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var user = models.DataSelect{}
-			err := rows.StructScan(&user)
-			if err != nil {
-				return nil, err
-			}
-			res = append(res, user)
-		}
 	}
-
 	return res, err
 }
 
 func GetDoubleAttrResult(query string, search string, search2 string) (uint, error) {
-	connect := app.NewConnect()
-
 	var res uint
 
-	err := connect.Mysql.Get(&res, query, search, search2)
+	err := app.Conn.Mysql.Get(&res, query, search, search2)
 	if err != nil {
 		return 0, err
 	}
-
 	return res, err
 }
 
 func GetUserByEmailPassword(email string, password string) (*models.User, error) {
-	connect := app.NewConnect()
+	var user = &models.User{}
 
-	var res *models.User
-
-	rows, err := connect.Mysql.Queryx(storage.GetUserByEmailPassword, email, password)
+	err := app.Conn.Mysql.Get(user, storage.GetUserByEmailPassword, email, password)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var user = models.User{}
-			err = rows.StructScan(&user)
-			if err != nil {
-				return nil, err
-			}
-			res = &user
-		}
 	}
-
-	return res, nil
+	return user, nil
 }
 
 func HandlerEditUser(w http.ResponseWriter, r *http.Request) {
@@ -99,29 +73,16 @@ func HandlerEditUser(w http.ResponseWriter, r *http.Request) {
 
 		user, err := GetUserById(userEmail.Value)
 		app.RenderTemplate(w, "user/edit/content-edit-user", &app.Page{Title: utils.USER, User: user}, &err)
-
 	}
 }
 
 func GetUserById(email string) (*models.User, error) {
-	connect := app.NewConnect()
+	var res = &models.User{}
 
-	var res *models.User
-
-	rows, err := connect.Mysql.Queryx(storage.GetUserByEmail, email)
+	err := app.Conn.Mysql.Get(res, storage.GetUserByEmail, email)
 	if err != nil {
 		return nil, err
-	} else {
-		for rows.Next() {
-			var employee = models.User{}
-			err = rows.StructScan(&employee)
-			if err != nil {
-				return nil, err
-			}
-			res = &employee
-		}
 	}
-
 	return res, nil
 }
 
@@ -129,9 +90,8 @@ func HandlerEditPostUser(w http.ResponseWriter, r *http.Request) {
 	if utils.HasCookieUserWriteHeader(w, r) {
 		user := ParseUserForm(r)
 		oldEmail := r.Form.Get("oldEmail")
-		connect := app.NewConnect()
 
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Query(
 			storage.UpdateUserByEmail,
 			user.Email,
 			user.FIO,

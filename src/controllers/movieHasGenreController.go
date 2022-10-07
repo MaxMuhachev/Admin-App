@@ -89,9 +89,9 @@ func saveMovieHasGenres(
 	movieHasGenreForAdd []*models.MovieHasGenre,
 	movieHasGenreForDelete []*models.MovieHasGenre,
 ) {
-	connect := app.NewConnect()
+
 	for _, movieHasGenre := range movieHasGenreForAdd {
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Queryx(
 			storage.CreateMovieHasGenres,
 			movieHasGenre.MovieID,
 			movieHasGenre.GenreID,
@@ -102,7 +102,7 @@ func saveMovieHasGenres(
 	}
 
 	for _, movieHasGenre := range movieHasGenreForDelete {
-		_, err := connect.Mysql.Queryx(
+		_, err := app.Conn.Mysql.Queryx(
 			storage.DeleteMovieGenreByMovieGenreID,
 			movieHasGenre.MovieID,
 			movieHasGenre.GenreID,
@@ -164,8 +164,6 @@ func ParseMovieHasGenreForm(r *http.Request) map[models.MovieLight][]*models.Gen
 }
 
 func GetMovieHasGenres(query string, arg1 string) (map[models.MovieLight][]*models.GenreLight, error) {
-	connect := app.NewConnect()
-
 	var (
 		res  = make(map[models.MovieLight][]*models.GenreLight)
 		rows *sqlx.Rows
@@ -173,9 +171,9 @@ func GetMovieHasGenres(query string, arg1 string) (map[models.MovieLight][]*mode
 	)
 
 	if arg1 == "" {
-		rows, err = connect.Mysql.Queryx(query)
+		rows, err = app.Conn.Mysql.Queryx(query)
 	} else {
-		rows, err = connect.Mysql.Queryx(query, arg1)
+		rows, err = app.Conn.Mysql.Queryx(query, arg1)
 	}
 	if err != nil {
 		return nil, err

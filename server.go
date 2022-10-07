@@ -11,7 +11,8 @@ import (
 
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
-	app.CreateConnect()
+
+	app.NewConnect()
 
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("src/resources/static"))))
 
