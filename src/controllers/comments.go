@@ -17,7 +17,7 @@ func HandlerUserComments(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlerViewComments(w http.ResponseWriter, r *http.Request) {
-	if utils.HasCookieUserWriteHeader(w, r) {
+	if utils.HasCookieAdminWriteHeader(w, r) {
 		app.RenderTemplate(w, "comments/content-comments", &app.Page{}, nil)
 	}
 }
@@ -56,6 +56,22 @@ func HandlerGetCommentsByMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func HandlerGetCommentsAdminByMovie(w http.ResponseWriter, r *http.Request) {
+	if utils.HasCookieAdminWriteHeader(w, r) {
+		r.ParseForm()
+		movieId := r.Form.Get("movie")
+		userEmail, _ := r.Cookie(config.MANAGER_PERSMISSION)
+
+		var res []*models.Comment
+
+		err := app.Conn.Mysql.Select(&res, storage.GetCommentsByMovie, userEmail.Value, movieId)
+		if !utils.ThrowError(err, w) {
+			json.NewEncoder(w).Encode(&res)
+			w.WriteHeader(http.StatusOK)
+		}
+	}
+}
+
 func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 	if utils.HasCookieUserWriteHeader(w, r) {
 		r.ParseForm()
@@ -65,7 +81,7 @@ func HandleCreateComment(w http.ResponseWriter, r *http.Request) {
 
 		_, err := app.Conn.Mysql.Query(storage.CreateComment, userEmail.Value, movieId, commentText)
 
-		res := models.Comment{}
+		res := &models.Comment{}
 
 		err = app.Conn.Mysql.Get(res, storage.GetLastCommentByMovieAndEmail, movieId, userEmail.Value)
 		if !utils.ThrowError(err, w) {

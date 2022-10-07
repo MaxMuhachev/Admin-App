@@ -19,6 +19,7 @@ func main() {
 	addGetRoute("/", router, controllers.HandlerIndex)
 	addPostRoute("/", router, controllers.HandlerPostIndex)
 
+	addGetRoute("/admin/comments/get", router, controllers.HandlerGetCommentsAdminByMovie)
 	addGetRoute("/api/movies", router, controllers.HandlerApiMovies)
 	addGetRoute("/movies", router, controllers.HandlerMovies)
 	addGetRoute("/movies/edit", router, controllers.HandlerEditMovie)
