@@ -8,19 +8,23 @@ import (
 
 func SetCookie(w http.ResponseWriter, cookieName, email string) {
 	cookie := &http.Cookie{
-		Name:  cookieName,
-		Value: email,
+		Name:     cookieName,
+		Value:    email,
+		HttpOnly: true,
 	}
 	http.SetCookie(w, cookie)
 }
 
 func ClearTokenHandler(w http.ResponseWriter, cookieName string) {
 	cookie := &http.Cookie{
-		Name:    cookieName,
-		Value:   "",
-		Expires: time.Unix(0, 0),
+		Name:     cookieName,
+		Value:    "",
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		HttpOnly: true,
 	}
 	http.SetCookie(w, cookie)
+
 }
 
 func HasCookieAdminWriteHeader(w http.ResponseWriter, r *http.Request) bool {
